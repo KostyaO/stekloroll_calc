@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор стоимости рольставней</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .calculator-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .calculator-form {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .calculator-results {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h2 {
+            color: #c49953;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        button {
+            background-color: #c49953;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #b38843;
+        }
+        .result-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .result-value {
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        .price-value {
+            font-size: 24px;
+            color: #c49953;
+            font-weight: 700;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .details-section {
+            margin-top: 20px;
+        }
+        .details-toggle {
+            background: none;
+            border: none;
+            color: #c49953;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            width: auto;
+            padding: 0;
+            text-align: left;
+        }
+        .details-content {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .details-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .details-label {
+            color: #555;
+        }
+        .details-value {
+            font-weight: 600;
+        }
+        .hidden {
+            display: none;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            background-color: #f5f5f5;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: white;
+            border-color: #ddd;
+            border-bottom-color: white;
+            color: #c49953;
+            font-weight: 600;
+        }
+        .tab.summary-tab {
+            background-color: #c49953;
+            color: white;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        .tab.summary-tab.active {
+            background-color: #b38843;
+            border-color: #b38843;
+            border-bottom-color: white;
+            animation: none;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .total-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #c49953;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(196, 153, 83, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(196, 153, 83, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(196, 153, 83, 0);
+            }
+        }
+        @media (max-width: 768px) {
+            .calculator-wrapper {
+                flex-direction: column;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .tab {
+                flex: 1;
+                text-align: center;
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Калькулятор стоимости рольставней</h1>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="panel1">Полотно 1</div>
+            <div class="tab" data-tab="panel2">Полотно 2</div>
+            <div class="tab" data-tab="panel3">Полотно 3</div>
+            <div class="tab" data-tab="panel4">Полотно 4</div>
+            <div class="tab summary-tab" data-tab="results">Смета всего объекта</div>
+        </div>
+        
+        <div class="calculator-wrapper">
+            <!-- Панель 1 -->
+            <div class="tab-content active" id="panel1">
+                <div class="calculator-form">
+                    <h2>Параметры полотна 1</h2>
+                    
+                    <div class="form-group">
+                        <label for="width1">Ширина (мм):</label>
+                        <input type="number" id="width1" min="800" max="5000" placeholder="Введите ширину (800-5000 мм)" required>
+                        <div id="width1-error" class="error-message hidden">Ширина должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="height1">Высота (мм):</label>
+                        <input type="number" id="height1" min="800" max="5000" placeholder="Введите высоту (800-5000 мм)" required>
+                        <div id="height1-error" class="error-message hidden">Высота должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип монтажа:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="mount-built-in1" name="mount-type1" value="встроенный" checked>
+                                <label for="mount-built-in1">Встроенный</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="mount-external1" name="mount-type1" value="накладной">
+                                <label for="mount-external1">Накладной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип привода:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="drive-electric1" name="drive-type1" value="электро" checked>
+                                <label for="drive-electric1">Электро</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="drive-manual1" name="drive-type1" value="ручной">
+                                <label for="drive-manual1">Ручной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="calculate-btn1" class="calculate-btn" data-panel="1">Рассчитать стоимость</button>
+                </div>
+                
+                <div class="calculator-results" id="results1">
+                    <h2>Результаты расчета</h2>
+                    
+                    <div id="results-container1" class="results-container hidden">
+                        <div class="result-item">
+                            <div class="result-label">Площадь конструкции:</div>
+                            <div id="area-result1" class="result-value">0 м²</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость конструкции:</div>
+                            <div id="price-result1" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость с монтажом:</div>
+                            <div id="installation-price-result1" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="details-section">
+                            <button id="details-toggle1" class="details-toggle">Показать технические детали</button>
+                            <div id="details-content1" class="details-content">
+                                <div class="details-item">
+                                    <span class="details-label">Площадь полотна:</span>
+                                    <span id="panel-area-result1" class="details-value">0 м²</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная ширина:</span>
+                                    <span id="calc-width-result1" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная высота:</span>
+                                    <span id="calc-height-result1" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Размер короба:</span>
+                                    <span id="box-size-result1" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип вала:</span>
+                                    <span id="shaft-type-result1" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип двигателя:</span>
+                                    <span id="motor-type-result1" class="details-value">-</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Длина направляющих:</span>
+                                    <span id="guide-length-result1" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Вес полотна:</span>
+                                    <span id="weight-result1" class="details-value">0 кг</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="error-container1" class="error-container hidden">
+                        <div class="error-message" id="calculation-error1">Пожалуйста, проверьте введенные данные</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Панель 2 -->
+            <div class="tab-content" id="panel2">
+                <div class="calculator-form">
+                    <h2>Параметры полотна 2</h2>
+                    
+                    <div class="form-group">
+                        <label for="width2">Ширина (мм):</label>
+                        <input type="number" id="width2" min="800" max="5000" placeholder="Введите ширину (800-5000 мм)" required>
+                        <div id="width2-error" class="error-message hidden">Ширина должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="height2">Высота (мм):</label>
+                        <input type="number" id="height2" min="800" max="5000" placeholder="Введите высоту (800-5000 мм)" required>
+                        <div id="height2-error" class="error-message hidden">Высота должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип монтажа:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="mount-built-in2" name="mount-type2" value="встроенный" checked>
+                                <label for="mount-built-in2">Встроенный</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="mount-external2" name="mount-type2" value="накладной">
+                                <label for="mount-external2">Накладной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип привода:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="drive-electric2" name="drive-type2" value="электро" checked>
+                                <label for="drive-electric2">Электро</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="drive-manual2" name="drive-type2" value="ручной">
+                                <label for="drive-manual2">Ручной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="calculate-btn2" class="calculate-btn" data-panel="2">Рассчитать стоимость</button>
+                </div>
+                
+                <div class="calculator-results" id="results2">
+                    <h2>Результаты расчета</h2>
+                    
+                    <div id="results-container2" class="results-container hidden">
+                        <div class="result-item">
+                            <div class="result-label">Площадь конструкции:</div>
+                            <div id="area-result2" class="result-value">0 м²</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость конструкции:</div>
+                            <div id="price-result2" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость с монтажом:</div>
+                            <div id="installation-price-result2" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="details-section">
+                            <button id="details-toggle2" class="details-toggle">Показать технические детали</button>
+                            <div id="details-content2" class="details-content">
+                                <div class="details-item">
+                                    <span class="details-label">Площадь полотна:</span>
+                                    <span id="panel-area-result2" class="details-value">0 м²</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная ширина:</span>
+                                    <span id="calc-width-result2" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная высота:</span>
+                                    <span id="calc-height-result2" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Размер короба:</span>
+                                    <span id="box-size-result2" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип вала:</span>
+                                    <span id="shaft-type-result2" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип двигателя:</span>
+                                    <span id="motor-type-result2" class="details-value">-</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Длина направляющих:</span>
+                                    <span id="guide-length-result2" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Вес полотна:</span>
+                                    <span id="weight-result2" class="details-value">0 кг</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="error-container2" class="error-container hidden">
+                        <div class="error-message" id="calculation-error2">Пожалуйста, проверьте введенные данные</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Панель 3 -->
+            <div class="tab-content" id="panel3">
+                <div class="calculator-form">
+                    <h2>Параметры полотна 3</h2>
+                    
+                    <div class="form-group">
+                        <label for="width3">Ширина (мм):</label>
+                        <input type="number" id="width3" min="800" max="5000" placeholder="Введите ширину (800-5000 мм)" required>
+                        <div id="width3-error" class="error-message hidden">Ширина должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="height3">Высота (мм):</label>
+                        <input type="number" id="height3" min="800" max="5000" placeholder="Введите высоту (800-5000 мм)" required>
+                        <div id="height3-error" class="error-message hidden">Высота должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип монтажа:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="mount-built-in3" name="mount-type3" value="встроенный" checked>
+                                <label for="mount-built-in3">Встроенный</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="mount-external3" name="mount-type3" value="накладной">
+                                <label for="mount-external3">Накладной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип привода:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="drive-electric3" name="drive-type3" value="электро" checked>
+                                <label for="drive-electric3">Электро</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="drive-manual3" name="drive-type3" value="ручной">
+                                <label for="drive-manual3">Ручной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="calculate-btn3" class="calculate-btn" data-panel="3">Рассчитать стоимость</button>
+                </div>
+                
+                <div class="calculator-results" id="results3">
+                    <h2>Результаты расчета</h2>
+                    
+                    <div id="results-container3" class="results-container hidden">
+                        <div class="result-item">
+                            <div class="result-label">Площадь конструкции:</div>
+                            <div id="area-result3" class="result-value">0 м²</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость конструкции:</div>
+                            <div id="price-result3" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость с монтажом:</div>
+                            <div id="installation-price-result3" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="details-section">
+                            <button id="details-toggle3" class="details-toggle">Показать технические детали</button>
+                            <div id="details-content3" class="details-content">
+                                <div class="details-item">
+                                    <span class="details-label">Площадь полотна:</span>
+                                    <span id="panel-area-result3" class="details-value">0 м²</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная ширина:</span>
+                                    <span id="calc-width-result3" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная высота:</span>
+                                    <span id="calc-height-result3" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Размер короба:</span>
+                                    <span id="box-size-result3" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип вала:</span>
+                                    <span id="shaft-type-result3" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип двигателя:</span>
+                                    <span id="motor-type-result3" class="details-value">-</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Длина направляющих:</span>
+                                    <span id="guide-length-result3" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Вес полотна:</span>
+                                    <span id="weight-result3" class="details-value">0 кг</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="error-container3" class="error-container hidden">
+                        <div class="error-message" id="calculation-error3">Пожалуйста, проверьте введенные данные</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Панель 4 -->
+            <div class="tab-content" id="panel4">
+                <div class="calculator-form">
+                    <h2>Параметры полотна 4</h2>
+                    
+                    <div class="form-group">
+                        <label for="width4">Ширина (мм):</label>
+                        <input type="number" id="width4" min="800" max="5000" placeholder="Введите ширину (800-5000 мм)" required>
+                        <div id="width4-error" class="error-message hidden">Ширина должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="height4">Высота (мм):</label>
+                        <input type="number" id="height4" min="800" max="5000" placeholder="Введите высоту (800-5000 мм)" required>
+                        <div id="height4-error" class="error-message hidden">Высота должна быть от 800 до 5000 мм</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип монтажа:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="mount-built-in4" name="mount-type4" value="встроенный" checked>
+                                <label for="mount-built-in4">Встроенный</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="mount-external4" name="mount-type4" value="накладной">
+                                <label for="mount-external4">Накладной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Тип привода:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="drive-electric4" name="drive-type4" value="электро" checked>
+                                <label for="drive-electric4">Электро</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="drive-manual4" name="drive-type4" value="ручной">
+                                <label for="drive-manual4">Ручной</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="calculate-btn4" class="calculate-btn" data-panel="4">Рассчитать стоимость</button>
+                </div>
+                
+                <div class="calculator-results" id="results4">
+                    <h2>Результаты расчета</h2>
+                    
+                    <div id="results-container4" class="results-container hidden">
+                        <div class="result-item">
+                            <div class="result-label">Площадь конструкции:</div>
+                            <div id="area-result4" class="result-value">0 м²</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость конструкции:</div>
+                            <div id="price-result4" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Стоимость с монтажом:</div>
+                            <div id="installation-price-result4" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="details-section">
+                            <button id="details-toggle4" class="details-toggle">Показать технические детали</button>
+                            <div id="details-content4" class="details-content">
+                                <div class="details-item">
+                                    <span class="details-label">Площадь полотна:</span>
+                                    <span id="panel-area-result4" class="details-value">0 м²</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная ширина:</span>
+                                    <span id="calc-width-result4" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Расчетная высота:</span>
+                                    <span id="calc-height-result4" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Размер короба:</span>
+                                    <span id="box-size-result4" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип вала:</span>
+                                    <span id="shaft-type-result4" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Тип двигателя:</span>
+                                    <span id="motor-type-result4" class="details-value">-</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Длина направляющих:</span>
+                                    <span id="guide-length-result4" class="details-value">0 мм</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Вес полотна:</span>
+                                    <span id="weight-result4" class="details-value">0 кг</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="error-container4" class="error-container hidden">
+                        <div class="error-message" id="calculation-error4">Пожалуйста, проверьте введенные данные</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Итоговая панель -->
+            <div class="tab-content" id="results">
+                <div class="calculator-form">
+                    <h2>Смета всего объекта</h2>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Полотно 1:</div>
+                        <div id="total-price1" class="result-value">Не рассчитано</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Полотно 2:</div>
+                        <div id="total-price2" class="result-value">Не рассчитано</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Полотно 3:</div>
+                        <div id="total-price3" class="result-value">Не рассчитано</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Полотно 4:</div>
+                        <div id="total-price4" class="result-value">Не рассчитано</div>
+                    </div>
+                    
+                    <div class="total-section">
+                        <div class="result-item">
+                            <div class="result-label">Общая стоимость конструкций:</div>
+                            <div id="total-price" class="price-value">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Общая стоимость с монтажом:</div>
+                            <div id="total-installation-price" class="price-value">0 ₽</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Переключение вкладок
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Удаляем активный класс у всех вкладок и контента
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Добавляем активный класс выбранной вкладке и контенту
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Обработчики для кнопок "Показать/скрыть технические детали"
+            for (let i = 1; i <= 4; i++) {
+                const detailsToggle = document.getElementById(`details-toggle${i}`);
+                const detailsContent = document.getElementById(`details-content${i}`);
+                
+                if (detailsToggle && detailsContent) {
+                    detailsToggle.addEventListener('click', function() {
+                        if (detailsContent.style.display === 'block') {
+                            detailsContent.style.display = 'none';
+                            detailsToggle.textContent = 'Показать технические детали';
+                        } else {
+                            detailsContent.style.display = 'block';
+                            detailsToggle.textContent = 'Скрыть технические детали';
+                        }
+                    });
+                }
+            }
+            
+            // Обработчики для кнопок "Рассчитать стоимость"
+            const calculateButtons = document.querySelectorAll('.calculate-btn');
+            calculateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const panelNumber = this.getAttribute('data-panel');
+                    calculatePanel(panelNumber);
+                    updateTotalPrice();
+                });
+            });
+            
+            // Функция расчета для одной панели
+            function calculatePanel(panelNumber) {
+                const widthInput = document.getElementById(`width${panelNumber}`);
+                const heightInput = document.getElementById(`height${panelNumber}`);
+                const widthError = document.getElementById(`width${panelNumber}-error`);
+                const heightError = document.getElementById(`height${panelNumber}-error`);
+                const resultsContainer = document.getElementById(`results-container${panelNumber}`);
+                const errorContainer = document.getElementById(`error-container${panelNumber}`);
+                
+                // Проверка ввода
+                let isValid = true;
+                
+                // Проверка ширины
+                const width = parseFloat(widthInput.value);
+                if (isNaN(width) || width < 800 || width > 5000) {
+                    widthError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    widthError.classList.add('hidden');
+                }
+                
+                // Проверка высоты
+                const height = parseFloat(heightInput.value);
+                if (isNaN(height) || height < 800 || height > 5000) {
+                    heightError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    heightError.classList.add('hidden');
+                }
+                
+                if (!isValid) {
+                    resultsContainer.classList.add('hidden');
+                    errorContainer.classList.remove('hidden');
+                    return;
+                }
+                
+                // Получение типа монтажа и привода
+                const mountType = document.querySelector(`input[name="mount-type${panelNumber}"]:checked`).value;
+                const driveType = document.querySelector(`input[name="drive-type${panelNumber}"]:checked`).value;
+                
+                try {
+                    // Расчет стоимости
+                    const result = calculatePrice(width, height, mountType, driveType, panelNumber);
+                    
+                    if (result.error) {
+                        resultsContainer.classList.add('hidden');
+                        errorContainer.classList.remove('hidden');
+                        document.getElementById(`calculation-error${panelNumber}`).textContent = result.error;
+                        return;
+                    }
+                    
+                    // Отображение результатов
+                    document.getElementById(`area-result${panelNumber}`).textContent = result.area + ' м²';
+                    document.getElementById(`panel-area-result${panelNumber}`).textContent = result.area + ' м²';
+                    document.getElementById(`price-result${panelNumber}`).textContent = result.totalPrice.toLocaleString() + ' ₽';
+                    document.getElementById(`installation-price-result${panelNumber}`).textContent = result.installationPrice.toLocaleString() + ' ₽';
+                    document.getElementById(`calc-width-result${panelNumber}`).textContent = result.calcWidth + ' мм';
+                    document.getElementById(`calc-height-result${panelNumber}`).textContent = result.calcHeight + ' мм';
+                    document.getElementById(`box-size-result${panelNumber}`).textContent = result.boxSize + ' мм';
+                    document.getElementById(`shaft-type-result${panelNumber}`).textContent = result.shaftType + ' мм';
+                    document.getElementById(`motor-type-result${panelNumber}`).textContent = result.motorType === 'ручной' ? 'Ручной привод' : 'Двигатель ' + result.motorType;
+                    document.getElementById(`guide-length-result${panelNumber}`).textContent = Math.round(result.guideLength) + ' мм';
+                    document.getElementById(`weight-result${panelNumber}`).textContent = result.weight + ' кг';
+                    
+                    // Обновление итоговой панели
+                    document.getElementById(`total-price${panelNumber}`).textContent = result.installationPrice.toLocaleString() + ' ₽';
+                    
+                    // Сохранение результатов в data-атрибуты для итогового расчета
+                    document.getElementById(`total-price${panelNumber}`).setAttribute('data-price', result.totalPrice);
+                    document.getElementById(`total-price${panelNumber}`).setAttribute('data-installation-price', result.installationPrice);
+                    document.getElementById(`total-price${panelNumber}`).setAttribute('data-drive-type', driveType);
+                    
+                    resultsContainer.classList.remove('hidden');
+                    errorContainer.classList.add('hidden');
+                } catch (error) {
+                    resultsContainer.classList.add('hidden');
+                    errorContainer.classList.remove('hidden');
+                    document.getElementById(`calculation-error${panelNumber}`).textContent = 'Ошибка при расчете. Пожалуйста, проверьте введенные данные.';
+                    console.error(error);
+                }
+            }
+            
+            // Функция обновления итоговой стоимости
+            function updateTotalPrice() {
+                let totalPrice = 0;
+                let totalInstallationPrice = 0;
+                let hasElectricDrive = false;
+                let remoteControlAdded = false;
+                
+                // Проверяем, есть ли хотя бы одно полотно с электроприводом
+                for (let i = 1; i <= 4; i++) {
+                    const priceElement = document.getElementById(`total-price${i}`);
+                    if (priceElement.hasAttribute('data-drive-type') && priceElement.getAttribute('data-drive-type') === 'электро') {
+                        hasElectricDrive = true;
+                        break;
+                    }
+                }
+                
+                // Рассчитываем общую стоимость
+                for (let i = 1; i <= 4; i++) {
+                    const priceElement = document.getElementById(`total-price${i}`);
+                    if (priceElement.hasAttribute('data-price') && priceElement.hasAttribute('data-installation-price')) {
+                        let panelPrice = parseFloat(priceElement.getAttribute('data-price'));
+                        let panelInstallationPrice = parseFloat(priceElement.getAttribute('data-installation-price'));
+                        
+                        // Если это полотно с электроприводом и пульт еще не добавлен
+                        if (priceElement.getAttribute('data-drive-type') === 'электро' && hasElectricDrive && !remoteControlAdded) {
+                            remoteControlAdded = true;
+                        } 
+                        // Если это полотно с электроприводом, но пульт уже добавлен в другом полотне
+                        else if (priceElement.getAttribute('data-drive-type') === 'электро' && hasElectricDrive && remoteControlAdded) {
+                            // Вычитаем стоимость пульта (4400 руб) из цены этого полотна
+                            panelPrice -= 4400;
+                            panelInstallationPrice = panelPrice * 1.10; // Пересчитываем стоимость с монтажом
+                        }
+                        
+                        totalPrice += panelPrice;
+                        totalInstallationPrice += panelInstallationPrice;
+                    }
+                }
+                
+                document.getElementById('total-price').textContent = totalPrice.toLocaleString() + ' ₽';
+                document.getElementById('total-installation-price').textContent = totalInstallationPrice.toLocaleString() + ' ₽';
+            }
+            
+            // Функция расчета стоимости
+            function calculatePrice(width, height, mountType, driveType, panelNumber) {
+                // Конвертация в миллиметры и проверка допустимых значений
+                width = parseFloat(width);
+                height = parseFloat(height);
+                
+                if (width < 800 || width > 5000 || height < 800 || height > 5000) {
+                    return { error: "Недопустимые размеры. Допустимый диапазон: 800-5000 мм" };
+                }
+                
+                // Корректировка размеров для накладного монтажа
+                let calcWidth = width;
+                let calcHeight = height;
+                if (mountType === "накладной") {
+                    calcWidth += 150;
+                    calcHeight += 150;
+                }
+                
+                // Расчет площади и веса
+                const area = (calcWidth / 1000) * (calcHeight / 1000);
+                const weight = area * 5.5;
+                
+                // Определение размера короба (по высоте)
+                let boxSize;
+                if (calcHeight <= 1700) {
+                    boxSize = 205;
+                } else if (calcHeight <= 2750) {
+                    boxSize = 250;
+                } else {
+                    boxSize = 300;
+                }
+                
+                // Определение типа вала (по ширине)
+                const shaftType = calcWidth <= 2800 ? 60 : 70;
+                
+                // Определение типа двигателя (по весу)
+                let motorType;
+                if (weight <= 40) {
+                    motorType = 40;
+                } else {
+                    motorType = 50;
+                }
+                
+                // Расчет длины направляющих
+                const guideLength = calcHeight - boxSize;
+                
+                // Расчет стоимости компонентов
+                const panelPrice = area * 7770;
+                
+                // Цена короба
+                let boxPricePerMeter;
+                if (boxSize === 205) boxPricePerMeter = 3670;
+                else if (boxSize === 250) boxPricePerMeter = 4650;
+                else boxPricePerMeter = 4980;
+                
+                const boxPrice = (calcWidth / 1000) * boxPricePerMeter;
+                
+                // Цена крышки
+                let coverPricePerMeter;
+                if (boxSize === 205) coverPricePerMeter = 3960;
+                else if (boxSize === 250) coverPricePerMeter = 4100;
+                else coverPricePerMeter = 5500;
+                
+                const coverPrice = (calcWidth / 1000) * coverPricePerMeter;
+                
+                // Цена вала
+                const shaftPricePerMeter = shaftType === 60 ? 1463 : 2487;
+                const shaftPrice = (calcWidth / 1000) * shaftPricePerMeter;
+                
+                // Цена капсулы
+                const capsulePrice = shaftType === 60 ? 540 : 1800;
+                
+                // Цена направляющих
+                const guidePricePerMeter = 2200;
+                const guidePrice = (guideLength / 1000) * 2 * guidePricePerMeter;
+                
+                // Компоненты в зависимости от типа привода
+                let driveComponents = 0;
+                if (driveType === "электро") {
+                    // Двигатель + пульт (пульт будет учтен только один раз при итоговом расчете)
+                    driveComponents = (motorType === 40 ? 14100 : 14800) + 4400;
+                } else {
+                    // Щеколда + ручной ПИМ
+                    driveComponents = 300 + 3657;
+                }
+                
+                // Итоговая стоимость конструкции
+                const totalPrice = panelPrice + boxPrice + coverPrice + shaftPrice + 
+                                  capsulePrice + guidePrice + driveComponents;
+                
+                // Стоимость с монтажом
+                const installationPrice = totalPrice * 1.10;
+                
+                return {
+                    calcWidth: calcWidth,
+                    calcHeight: calcHeight,
+                    area: area.toFixed(2),
+                    weight: weight.toFixed(2),
+                    boxSize: boxSize,
+                    shaftType: shaftType,
+                    motorType: driveType === "электро" ? motorType : "ручной",
+                    guideLength: guideLength,
+                    panelPrice: Math.round(panelPrice),
+                    boxPrice: Math.round(boxPrice),
+                    coverPrice: Math.round(coverPrice),
+                    shaftPrice: Math.round(shaftPrice),
+                    capsulePrice: Math.round(capsulePrice),
+                    guidePrice: Math.round(guidePrice),
+                    driveComponents: Math.round(driveComponents),
+                    totalPrice: Math.round(totalPrice),
+                    installationPrice: Math.round(installationPrice)
+                };
+            }
+        });
+    </script>
+</body>
+</html>
